@@ -5,8 +5,8 @@
 	<persistence-unit name="test-jpa">
 		<class>com.lifeinide.rest.filter.test.hibernate.jpa.JpaAssociatedEntity</class>
 		<class>com.lifeinide.rest.filter.test.hibernate.jpa.JpaEntity</class>
-		<class>com.lifeinide.rest.filter.test.hibernate.search.HibernateSearchEntity</class>
-		<class>com.lifeinide.rest.filter.test.hibernate.search.HibernateSearchAssociatedEntity</class>
+		<class>com.lifeinide.jsonql.hibernate.search.test.HibernateSearchEntity</class>
+		<class>com.lifeinide.jsonql.hibernate.search.test.HibernateSearchAssociatedEntity</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>

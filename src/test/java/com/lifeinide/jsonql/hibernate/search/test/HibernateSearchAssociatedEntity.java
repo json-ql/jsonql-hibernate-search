@@ -1,4 +1,4 @@
-package com.lifeinide.rest.filter.test.hibernate.search;
+package com.lifeinide.jsonql.hibernate.search.test;
 
 import com.lifeinide.jsonql.core.test.IBaseEntity;
 import com.lifeinide.jsonql.hibernate.search.HibernateSearch;
