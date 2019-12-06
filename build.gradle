@@ -22,10 +22,10 @@ task sourcesJar(type: Jar) {
     archiveClassifier = 'sources'
 }
 
-task javadocJar(type: Jar) {
-    from javadoc
-    archiveClassifier = 'javadoc'
-}
+//task javadocJar(type: Jar) {
+//    from javadoc
+//    archiveClassifier = 'javadoc'
+//}
 
 def token = project.findProperty("token")
 if (!token) {
@@ -42,7 +42,7 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
             artifact sourcesJar
-            artifact javadocJar
+//            artifact javadocJar
         }
     }
 
