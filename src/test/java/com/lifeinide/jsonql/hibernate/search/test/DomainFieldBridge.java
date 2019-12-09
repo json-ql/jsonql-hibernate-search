@@ -1,21 +1,21 @@
 package com.lifeinide.jsonql.hibernate.search.test;
 
-import com.lifeinide.jsonql.core.test.IBaseEntity;
+import com.lifeinide.jsonql.core.test.IJsonQLBaseTestEntity;
 import com.lifeinide.jsonql.hibernate.search.BaseDomainFieldBridge;
 
 /**
  * @author Lukasz Frankowski
  */
-public class DomainFieldBridge extends BaseDomainFieldBridge<IBaseEntity<Long>> {
+public class DomainFieldBridge extends BaseDomainFieldBridge<IJsonQLBaseTestEntity<Long>> {
 
 	@Override
-	public String getEntityIdAsString(IBaseEntity<Long> entity) {
+	public String getEntityIdAsString(IJsonQLBaseTestEntity<Long> entity) {
 		return String.valueOf(entity.getId());
 	}
 
 	@Override
 	public boolean isEntity(Object entity) {
-		return entity instanceof IBaseEntity;
+		return entity instanceof IJsonQLBaseTestEntity;
 	}
 	
 }

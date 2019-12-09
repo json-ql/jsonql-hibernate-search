@@ -1,7 +1,7 @@
 package com.lifeinide.jsonql.hibernate.search.test;
 
-import com.lifeinide.jsonql.core.test.EntityEnum;
-import com.lifeinide.jsonql.core.test.IEntity;
+import com.lifeinide.jsonql.core.test.IJsonQLTestEntity;
+import com.lifeinide.jsonql.core.test.JsonQLTestEntityEnum;
 import com.lifeinide.jsonql.hibernate.search.HibernateSearch;
 import com.lifeinide.jsonql.hibernate.search.RangeNumberBridge;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
@@ -16,7 +16,7 @@ import java.time.LocalDate;
  */
 @Entity
 @Indexed
-public class HibernateSearchEntity implements IEntity<Long, HibernateSearchAssociatedEntity> {
+public class HibernateSearchEntity implements IJsonQLTestEntity<Long, HibernateSearchAssociatedEntity> {
 
 	@Id private Long id;
 
@@ -40,7 +40,7 @@ public class HibernateSearchEntity implements IEntity<Long, HibernateSearchAssoc
 
 	@Enumerated(EnumType.STRING)
 	@Field(analyze = Analyze.NO, norms = Norms.NO)
-	protected EntityEnum enumVal;
+	protected JsonQLTestEntityEnum enumVal;
 
 	@ManyToOne
 	@Field(analyze = Analyze.NO, norms = Norms.NO)
@@ -113,12 +113,12 @@ public class HibernateSearchEntity implements IEntity<Long, HibernateSearchAssoc
 	}
 
 	@Override
-	public EntityEnum getEnumVal() {
+	public JsonQLTestEntityEnum getEnumVal() {
 		return enumVal;
 	}
 
 	@Override
-	public void setEnumVal(EntityEnum enumVal) {
+	public void setEnumVal(JsonQLTestEntityEnum enumVal) {
 		this.enumVal = enumVal;
 	}
 

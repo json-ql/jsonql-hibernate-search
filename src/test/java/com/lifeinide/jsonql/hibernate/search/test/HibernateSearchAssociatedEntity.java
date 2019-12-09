@@ -1,6 +1,6 @@
 package com.lifeinide.jsonql.hibernate.search.test;
 
-import com.lifeinide.jsonql.core.test.IBaseEntity;
+import com.lifeinide.jsonql.core.test.IJsonQLBaseTestEntity;
 import com.lifeinide.jsonql.hibernate.search.HibernateSearch;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.hibernate.search.annotations.Analyzer;
@@ -15,7 +15,7 @@ import javax.persistence.Id;
  */
 @Entity
 @Indexed
-public class HibernateSearchAssociatedEntity implements IBaseEntity<Long> {
+public class HibernateSearchAssociatedEntity implements IJsonQLBaseTestEntity<Long> {
 
 	@Id Long id;
 

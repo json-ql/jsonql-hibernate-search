@@ -1,8 +1,8 @@
 package com.lifeinide.jsonql.hibernate.search.test;
 
 import com.lifeinide.jsonql.core.dto.Page;
-import com.lifeinide.jsonql.core.test.BaseQueryBuilderTest;
-import com.lifeinide.jsonql.core.test.QueryBuilderTestFeature;
+import com.lifeinide.jsonql.core.test.JsonQLBaseQueryBuilderTest;
+import com.lifeinide.jsonql.core.test.JsonQLQueryBuilderTestFeature;
 import com.lifeinide.jsonql.hibernate.search.DefaultHibernateSearchFilterQueryBuilder;
 import com.lifeinide.jsonql.hibernate.search.HibernateSearch;
 import com.lifeinide.jsonql.hibernate.search.HibernateSearchFilterQueryBuilder;
@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 /**
  * @author Lukasz Frankowski
  */
-public class HibernateSearchQueryBuilderTest extends BaseQueryBuilderTest<
+public class HibernateSearchQueryBuilderTest extends JsonQLBaseQueryBuilderTest<
 	EntityManager,
 	Long,
 	HibernateSearchAssociatedEntity,
@@ -56,7 +56,7 @@ public class HibernateSearchQueryBuilderTest extends BaseQueryBuilderTest<
 	}
 
 	@Override
-	protected boolean supports(QueryBuilderTestFeature feature) {
+	protected boolean supports(JsonQLQueryBuilderTestFeature feature) {
 		switch (feature) {
 			case STRICT_INEQUALITIES:
 			case STRICT_DECIMALS:
