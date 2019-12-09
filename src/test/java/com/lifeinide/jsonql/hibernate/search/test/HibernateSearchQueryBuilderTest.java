@@ -81,7 +81,7 @@ public class HibernateSearchQueryBuilderTest extends JsonQLBaseQueryBuilderTest<
 	@Override
 	protected void doTest(BiConsumer<EntityManager, HibernateSearchFilterQueryBuilder<HibernateSearchEntity, Page<HibernateSearchEntity>>> c) {
 		doWithEntityManager(em -> c.accept(em,
-			new HibernateSearchFilterQueryBuilder<>(new HibernateSearch(em), HibernateSearchEntity.class, SEARCHABLE_STRING)));
+			new HibernateSearchFilterQueryBuilder<>(em, HibernateSearchEntity.class, SEARCHABLE_STRING)));
 	}
 
 	@Test

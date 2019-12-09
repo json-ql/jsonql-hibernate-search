@@ -104,8 +104,7 @@ public class UserController {
         entityManager.getTransaction().begin();
 
         try {
-            return new DefaultHibernateSearchFilterQueryBuilder<User>(
-                    new HibernateSearch(em), User.class, filter.getQuery())
+            return new DefaultHibernateSearchFilterQueryBuilder<User>(em, User.class, filter.getQuery())
                 .add("admin", filter.getAdmin())
                 .list(filter);
         } finally {

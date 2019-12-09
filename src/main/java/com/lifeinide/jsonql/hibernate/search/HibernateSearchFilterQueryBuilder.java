@@ -17,6 +17,7 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.List;
@@ -46,7 +47,11 @@ extends BaseFilterQueryBuilder<E, P, FullTextQuery, HibernateSearchQueryBuilderC
 	/**
 	 * @param entityClass Use concrete entity class to search for the specific entities, or {@code Object.class} to do a global search.
 	 */
-	public HibernateSearchFilterQueryBuilder(HibernateSearch hibernateSearch, Class<E> entityClass, String q) {
+	public HibernateSearchFilterQueryBuilder(EntityManager entityManager, Class<E> entityClass, String q) {
+		this(new HibernateSearch(entityManager), entityClass, q);
+	}
+
+	protected HibernateSearchFilterQueryBuilder(HibernateSearch hibernateSearch, Class<E> entityClass, String q) {
 		QueryBuilder queryBuilder = hibernateSearch.queryBuilder(entityClass);
 		BooleanJunction<?> booleanJunction = queryBuilder.bool();
 		this.context = new HibernateSearchQueryBuilderContext<>(q, entityClass, hibernateSearch, queryBuilder, booleanJunction);
