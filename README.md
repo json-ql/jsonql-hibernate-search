@@ -104,7 +104,8 @@ public class UserController {
         entityManager.getTransaction().begin();
 
         try {
-            return new DefaultHibernateSearchFilterQueryBuilder<User>(new HibernateSearch(em), User.class, filter.getQuery())
+            return new DefaultHibernateSearchFilterQueryBuilder<User>(
+                    new HibernateSearch(em), User.class, filter.getQuery())
                 .add("admin", filter.getAdmin())
                 .list(filter);
         } finally {
@@ -116,7 +117,7 @@ public class UserController {
 }
 ```
 
-Of course, this is ony a clunky example. Usually the `EntityManager` will be obtained  elsewhere, and it's the only thing required to build `HibernateSearchFilterQueryBuilder`.
+Of course, this is only a clunky example. Usually the `EntityManager` will be obtained  elsewhere, and it's the only thing required to build `HibernateSearchFilterQueryBuilder`.
 
 ### 6. Test the controller
 
@@ -154,4 +155,4 @@ To search only admins paginated:
 }
 ```
 
-And of course you can add a lot more fields to your `User` entity and then consider them in `UserFilter`. Besides `SingleValueQueryFilter`, which just filters our a single primitive value like `Boolean` or `Enum`, there're plenty of other predefined filters available and described [here](https://github.com/json-ql/jsonql-core).
+And of course you can add a lot more fields to your `User` entity and then consider them in `UserFilter`. Besides `SingleValueQueryFilter`, which just filters out a single primitive value like `Boolean` or `Enum`, there're plenty of other predefined filters available and described [here](https://github.com/json-ql/jsonql-core).
