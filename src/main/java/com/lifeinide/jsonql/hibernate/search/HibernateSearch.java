@@ -8,6 +8,8 @@ import org.hibernate.search.query.dsl.QueryBuilder;
 
 import javax.persistence.EntityManager;
 
+import static org.hibernate.search.util.StringHelper.*;
+
 /**
  * Hibernate search helper.
  *
@@ -144,6 +146,14 @@ public class HibernateSearch {
 
 	public FullTextQuery buildQuery(Query query, Class entityClass) {
 		return fullTextEntityManager().createFullTextQuery(query, entityClass);
+	}
+
+	public static String makeWild(String s) {
+		if (isEmpty(s))
+			return s;
+		if (s.endsWith("*"))
+			return s;
+		return s+"*";
 	}
 
 }

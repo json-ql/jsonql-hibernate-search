@@ -4,7 +4,6 @@ import com.lifeinide.jsonql.core.dto.Page;
 import com.lifeinide.jsonql.core.test.JsonQLBaseQueryBuilderTest;
 import com.lifeinide.jsonql.core.test.JsonQLQueryBuilderTestFeature;
 import com.lifeinide.jsonql.hibernate.search.DefaultHibernateSearchFilterQueryBuilder;
-import com.lifeinide.jsonql.hibernate.search.HibernateSearch;
 import com.lifeinide.jsonql.hibernate.search.HibernateSearchFilterQueryBuilder;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -88,11 +87,11 @@ public class HibernateSearchQueryBuilderTest extends JsonQLBaseQueryBuilderTest<
 	public void testLocalAndGlobalSearch() {
 		doWithEntityManager(em -> {
 			DefaultHibernateSearchFilterQueryBuilder<?> qb =
-				new DefaultHibernateSearchFilterQueryBuilder<>(new HibernateSearch(em), HibernateSearchEntity.class, SEARCHABLE_STRING_PART);
+				new DefaultHibernateSearchFilterQueryBuilder<>(em, HibernateSearchEntity.class, SEARCHABLE_STRING_PART);
 			Page<?> page = qb.list();
 			Assertions.assertEquals(100, page.getCount());
 
-			qb = new DefaultHibernateSearchFilterQueryBuilder<>(new HibernateSearch(em), Object.class, SEARCHABLE_STRING_PART);
+			qb = new DefaultHibernateSearchFilterQueryBuilder<>(em, Object.class, SEARCHABLE_STRING_PART);
 			page = qb.list();
 			Assertions.assertEquals(101, page.getCount());
 		});

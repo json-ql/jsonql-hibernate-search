@@ -20,19 +20,16 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManager;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static org.hibernate.search.util.StringHelper.*;
-
 /**
- * Implementation of {@link FilterQueryBuilder} for Hibernate Search using local filesystem lucene index. Use with dependency:
- *
- * <pre>{@code
- * compile group: 'org.hibernate', name: 'hibernate-search-engine', version: '5.11.4.Final'
- * compileOnly group: 'org.hibernate', name: 'hibernate-search-orm', version: '5.11.4.Final'
- * }</pre>
+ * Implementation of {@link FilterQueryBuilder} for Hibernate Search using local filesystem Lucene index. By default it looks for
+ * documents containing {@link HibernateSearch#FIELD_TEXT} using {@link FieldSearchType#PHRASE} and {@link HibernateSearch#FIELD_ID}
+ * using {@link FieldSearchType#WILDCARD_TERM}. This behavior is configurable using one of constructors.
  *
  * @see HibernateSearch How to define searchable fields on entities
  * @author Lukasz Frankowski
@@ -43,15 +40,22 @@ extends BaseFilterQueryBuilder<E, P, FullTextQuery, HibernateSearchQueryBuilderC
 	public static final Logger logger = LoggerFactory.getLogger(HibernateSearchFilterQueryBuilder.class);
 
 	protected HibernateSearchQueryBuilderContext<E> context;
+	protected Map<String, FieldSearchType> fields;
 
 	/**
 	 * @param entityClass Use concrete entity class to search for the specific entities, or {@code Object.class} to do a global search.
 	 */
-	public HibernateSearchFilterQueryBuilder(EntityManager entityManager, Class<E> entityClass, String q) {
-		this(new HibernateSearch(entityManager), entityClass, q);
+	public HibernateSearchFilterQueryBuilder(EntityManager entityManager, Class<E> entityClass, String q,
+											 Map<String, FieldSearchType> fields) {
+		this(new HibernateSearch(entityManager), entityClass, q, fields);
 	}
 
-	protected HibernateSearchFilterQueryBuilder(HibernateSearch hibernateSearch, Class<E> entityClass, String q) {
+	public HibernateSearchFilterQueryBuilder(EntityManager entityManager, Class<E> entityClass, String q) {
+		this(entityManager, entityClass, q, defaultSearchFields());
+	}
+
+	protected HibernateSearchFilterQueryBuilder(HibernateSearch hibernateSearch, Class<E> entityClass, String q,
+												Map<String, FieldSearchType> fields) {
 		QueryBuilder queryBuilder = hibernateSearch.queryBuilder(entityClass);
 		BooleanJunction<?> booleanJunction = queryBuilder.bool();
 		this.context = new HibernateSearchQueryBuilderContext<>(q, entityClass, hibernateSearch, queryBuilder, booleanJunction);
@@ -60,33 +64,14 @@ extends BaseFilterQueryBuilder<E, P, FullTextQuery, HibernateSearchQueryBuilderC
 
 		boolean fieldFound = false;
 
-		// FIELD_TEXT phrase search
+		for (Map.Entry<String, FieldSearchType> entry: fields.entrySet()) {
+			try {
+				fullTextQuery.should(entry.getValue().createQuery(queryBuilder, entry.getKey(), q));
+				fieldFound = true;
+			} catch (Exception e) {
+				// silently, this means that some of our full text fields don't exists in the entity
+			}
 
-		try {
-			fullTextQuery.should(
-				queryBuilder
-					.phrase()
-					.onField(HibernateSearch.FIELD_TEXT)
-					.sentence(q).createQuery())
-				.createQuery();
-			fieldFound = true;
-		} catch (Exception e) {
-			// silently, this means that some of our full text fields don't exists in the entity
-		}
-
-		// FIELD_ID wildcard search
-
-		try {
-			fullTextQuery.should(
-				queryBuilder
-					.keyword()
-					.wildcard()
-					.onField(HibernateSearch.FIELD_ID)
-					.matching(makeWild(q))
-					.createQuery());
-			fieldFound = true;
-		} catch (Exception e) {
-			// silently, this means that some of our full text fields don't exists in the entity
 		}
 
 		if (!fieldFound)
@@ -292,14 +277,6 @@ extends BaseFilterQueryBuilder<E, P, FullTextQuery, HibernateSearchQueryBuilderC
 		return this;
 	}
 
-	protected String makeWild(String s) {
-		if (isEmpty(s))
-			return s;
-		if (s.endsWith("*"))
-			return s;
-		return s+"*";
-	}
-
 	@Override
 	public HibernateSearchQueryBuilderContext<E> context() {
 		return context;
@@ -346,6 +323,13 @@ extends BaseFilterQueryBuilder<E, P, FullTextQuery, HibernateSearchQueryBuilderC
 	@Override
 	public P list(Pageable pageable, Sortable<?> sortable) {
 		return (P) execute(pageable, sortable, null, null);
+	}
+
+	public static Map<String, FieldSearchType> defaultSearchFields() {
+		Map<String, FieldSearchType> map = new LinkedHashMap<>();
+		map.put(HibernateSearch.FIELD_TEXT, FieldSearchType.PHRASE);
+		map.put(HibernateSearch.FIELD_ID, FieldSearchType.WILDCARD_TERM);
+		return map;
 	}
 
 }
