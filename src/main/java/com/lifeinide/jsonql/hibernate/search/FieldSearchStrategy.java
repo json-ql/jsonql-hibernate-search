@@ -8,7 +8,7 @@ import org.hibernate.search.query.dsl.QueryBuilder;
  *
  * @author Lukasz Frankowski
  */
-public enum FieldSearchType {
+public enum FieldSearchStrategy {
 
 	/** Does {@link org.apache.lucene.search.PhraseQuery} **/
 	PHRASE {

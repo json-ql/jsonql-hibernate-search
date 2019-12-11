@@ -1,5 +1,6 @@
-package com.lifeinide.jsonql.hibernate.search;
+package com.lifeinide.jsonql.hibernate.search.bridge;
 
+import com.lifeinide.jsonql.hibernate.search.HibernateSearch;
 import org.apache.lucene.document.Document;
 import org.hibernate.search.bridge.FieldBridge;
 import org.hibernate.search.bridge.LuceneOptions;

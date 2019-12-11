@@ -3,7 +3,7 @@ package com.lifeinide.jsonql.hibernate.search.test;
 import com.lifeinide.jsonql.core.test.IJsonQLTestEntity;
 import com.lifeinide.jsonql.core.test.JsonQLTestEntityEnum;
 import com.lifeinide.jsonql.hibernate.search.HibernateSearch;
-import com.lifeinide.jsonql.hibernate.search.RangeNumberBridge;
+import com.lifeinide.jsonql.hibernate.search.bridge.BigDecimalRangeBridge;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.hibernate.search.annotations.*;
 
@@ -20,33 +20,32 @@ public class HibernateSearchEntity implements IJsonQLTestEntity<Long, HibernateS
 
 	@Id private Long id;
 
-	@Field(name = HibernateSearch.FIELD_TEXT)
+	@Field(name = HibernateSearch.FIELD_TEXT, store = Store.YES)
 	@Analyzer(impl = EnglishAnalyzer.class)
 	protected String q = HibernateSearchQueryBuilderTest.SEARCHABLE_STRING;
 
-	@Field(analyze = Analyze.NO, norms = Norms.NO)
+	@Field(analyze = Analyze.NO, norms = Norms.NO, store = Store.YES)
 	protected String stringVal;
 
-	@Field(analyze = Analyze.NO, norms = Norms.NO)
+	@Field(analyze = Analyze.NO, norms = Norms.NO, store = Store.YES)
 	protected boolean booleanVal;
 
-	@Field(analyze = Analyze.NO, norms = Norms.NO)
-	@FieldBridge(impl = RangeNumberBridge.class)
+	@Field(analyze = Analyze.NO, norms = Norms.NO, store = Store.YES)
 	protected Long longVal;
 
-	@Field(analyze = Analyze.NO, norms = Norms.NO)
-	@FieldBridge(impl = RangeNumberBridge.class)
+	@Field(analyze = Analyze.NO, norms = Norms.NO, store = Store.YES)
+	@FieldBridge(impl = BigDecimalRangeBridge.class)
 	protected BigDecimal decimalVal;
 
-	@Field(analyze = Analyze.NO, norms = Norms.NO)
+	@Field(analyze = Analyze.NO, norms = Norms.NO, store = Store.YES)
 	protected LocalDate dateVal;
 
 	@Enumerated(EnumType.STRING)
-	@Field(analyze = Analyze.NO, norms = Norms.NO)
+	@Field(analyze = Analyze.NO, norms = Norms.NO, store = Store.YES)
 	protected JsonQLTestEntityEnum enumVal;
 
 	@ManyToOne
-	@Field(analyze = Analyze.NO, norms = Norms.NO)
+	@Field(analyze = Analyze.NO, norms = Norms.NO, store = Store.YES)
 	@FieldBridge(impl = DomainFieldBridge.class)
 	protected HibernateSearchAssociatedEntity entityVal;
 

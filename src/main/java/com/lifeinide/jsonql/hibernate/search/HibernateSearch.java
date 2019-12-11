@@ -5,6 +5,7 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
+import org.hibernate.search.query.engine.spi.QueryDescriptor;
 
 import javax.persistence.EntityManager;
 
@@ -57,10 +58,14 @@ public class HibernateSearch {
 	}
 
 	public QueryBuilder queryBuilder(Class entityClass) {
-		return Search.getFullTextEntityManager(entityManager).getSearchFactory().buildQueryBuilder().forEntity(entityClass).get();
+		return fullTextEntityManager().getSearchFactory().buildQueryBuilder().forEntity(entityClass).get();
 	}
 
 	public FullTextQuery buildQuery(Query query, Class entityClass) {
+		return fullTextEntityManager().createFullTextQuery(query, entityClass);
+	}
+
+	public FullTextQuery buildQuery(QueryDescriptor query, Class entityClass) {
 		return fullTextEntityManager().createFullTextQuery(query, entityClass);
 	}
 

@@ -12,7 +12,7 @@ public class DefaultHibernateSearchFilterQueryBuilder<E>
 extends HibernateSearchFilterQueryBuilder<E, Page<E>> {
 
 	public DefaultHibernateSearchFilterQueryBuilder(EntityManager entityManager, Class<E> entityClass, String q,
-													Map<String, FieldSearchType> fields) {
+													Map<String, FieldSearchStrategy> fields) {
 		super(entityManager, entityClass, q, fields);
 	}
 

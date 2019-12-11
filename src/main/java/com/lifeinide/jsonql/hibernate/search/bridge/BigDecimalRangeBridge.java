@@ -1,18 +1,21 @@
-package com.lifeinide.jsonql.hibernate.search;
+package com.lifeinide.jsonql.hibernate.search.bridge;
 
 import com.lifeinide.jsonql.core.filters.SingleValueQueryFilter;
 import com.lifeinide.jsonql.core.filters.ValueRangeQueryFilter;
+import com.lifeinide.jsonql.hibernate.search.HibernateSearchFilterQueryBuilder;
 import org.hibernate.search.bridge.FieldBridge;
 import org.hibernate.search.bridge.builtin.NumberBridge;
 
+import java.math.BigDecimal;
+
 /**
- * A {@link FieldBridge} used to store {@link Number} values so that they are searchable using {@link SingleValueQueryFilter} and
+ * A {@link FieldBridge} used to store {@link BigDecimal} values so that they are searchable using {@link SingleValueQueryFilter} and
  * {@link ValueRangeQueryFilter}.
  *
- * @see HibernateSearch How to use this bridge in searchable entities
+ * @see HibernateSearchFilterQueryBuilder How to use this bridge in searchable entities
  * @author Lukasz Frankowski
  */
-public class RangeNumberBridge extends NumberBridge {
+public class BigDecimalRangeBridge extends NumberBridge {
 
 	public static final int NUMBER_SIZE = 20;
 	public static final String ZEROS_PAD_TEMPLATE = "00000000000000000000";

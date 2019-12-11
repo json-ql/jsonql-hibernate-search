@@ -10,6 +10,8 @@ import com.lifeinide.jsonql.core.intr.FilterQueryBuilder;
 import com.lifeinide.jsonql.core.intr.Pageable;
 import com.lifeinide.jsonql.core.intr.QueryFilter;
 import com.lifeinide.jsonql.core.intr.Sortable;
+import com.lifeinide.jsonql.hibernate.search.bridge.BaseDomainFieldBridge;
+import com.lifeinide.jsonql.hibernate.search.bridge.BigDecimalRangeBridge;
 import org.hibernate.search.exception.SearchException;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.query.dsl.BooleanJunction;
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -66,22 +69,19 @@ import java.util.function.Function;
  *
  * To check examples of types of fields we support with filtering, please refer {@code HibernateSearchEntity} from test package.
  *
- * <h3>Field bridge for numbers</h3>
+ * <h3>Field bridge for {@link BigDecimal}</h3>
  *
  * <p>
- * By default Lucene performs text searchs even for ranges, so fox example "2" > "10" for Lucene. To assert proper numbers filtering
- * for Lucene we prepend all number with zeros, so that "*0002" > "*0010" and we can apply filtering properly. This is why the filtering
- * fields of {@link Number} type should be defined with {@link RangeNumberBridge}:
+ * By default {@link BigDecimal} is written as {@link String} in an index and Lucene performs text searchs even for ranges, so for
+ * example "2" > "10" for Lucene. To assert proper {@link BigDecimal} filtering for Lucene we prepend all numbers with zeros, so that
+ * "0002" > "0010" and we can apply filtering properly. This is why the filtering fields of {@link BigDecimal} type should be defined with
+ * {@link BigDecimalRangeBridge}:
  * </p>
  *
  * Usage:
  * <pre>{@code
  * @Field(analyze = Analyze.NO, norms = Norms.NO)
- * @FieldBridge(impl = RangeNumberBridge.class)
- * protected Long longVal;
- *
- * @Field(analyze = Analyze.NO, norms = Norms.NO)
- * @FieldBridge(impl = RangeNumberBridge.class)
+ * @FieldBridge(impl = BigDecimalRangeBridge.class)
  * protected BigDecimal decimalVal;
  * }</pre>
  *
@@ -124,13 +124,13 @@ extends BaseFilterQueryBuilder<E, P, FullTextQuery, HibernateSearchQueryBuilderC
 	public static final Logger logger = LoggerFactory.getLogger(HibernateSearchFilterQueryBuilder.class);
 
 	protected HibernateSearchQueryBuilderContext<E> context;
-	protected Map<String, FieldSearchType> fields;
+	protected Map<String, FieldSearchStrategy> fields;
 
 	/**
 	 * @param entityClass Use concrete entity class to search for the specific entities, or {@code Object.class} to do a global search.
 	 */
 	public HibernateSearchFilterQueryBuilder(EntityManager entityManager, Class<E> entityClass, String q,
-											 Map<String, FieldSearchType> fields) {
+											 Map<String, FieldSearchStrategy> fields) {
 		this(new HibernateSearch(entityManager), entityClass, q, fields);
 	}
 
@@ -139,16 +139,17 @@ extends BaseFilterQueryBuilder<E, P, FullTextQuery, HibernateSearchQueryBuilderC
 	}
 
 	protected HibernateSearchFilterQueryBuilder(HibernateSearch hibernateSearch, Class<E> entityClass, String q,
-												Map<String, FieldSearchType> fields) {
+												Map<String, FieldSearchStrategy> fields) {
 		QueryBuilder queryBuilder = hibernateSearch.queryBuilder(entityClass);
 		BooleanJunction<?> booleanJunction = queryBuilder.bool();
-		this.context = new HibernateSearchQueryBuilderContext<>(q, entityClass, hibernateSearch, queryBuilder, booleanJunction);
+		this.context = new HibernateSearchQueryBuilderContext<>(q, entityClass, hibernateSearch, queryBuilder, booleanJunction,
+			hibernateSearch.fullTextEntityManager().getSearchFactory().getIndexedTypeDescriptor(entityClass));
 
 		BooleanJunction<?> fullTextQuery = queryBuilder.bool();
 
 		boolean fieldFound = false;
 
-		for (Map.Entry<String, FieldSearchType> entry: fields.entrySet()) {
+		for (Map.Entry<String, FieldSearchStrategy> entry: fields.entrySet()) {
 			try {
 				fullTextQuery.should(entry.getValue().createQuery(queryBuilder, entry.getKey(), q));
 				fieldFound = true;
@@ -409,10 +410,10 @@ extends BaseFilterQueryBuilder<E, P, FullTextQuery, HibernateSearchQueryBuilderC
 		return (P) execute(pageable, sortable, null, null);
 	}
 
-	public static Map<String, FieldSearchType> defaultSearchFields() {
-		Map<String, FieldSearchType> map = new LinkedHashMap<>();
-		map.put(HibernateSearch.FIELD_TEXT, FieldSearchType.PHRASE);
-		map.put(HibernateSearch.FIELD_ID, FieldSearchType.WILDCARD_TERM);
+	public static Map<String, FieldSearchStrategy> defaultSearchFields() {
+		Map<String, FieldSearchStrategy> map = new LinkedHashMap<>();
+		map.put(HibernateSearch.FIELD_TEXT, FieldSearchStrategy.PHRASE);
+		map.put(HibernateSearch.FIELD_ID, FieldSearchStrategy.WILDCARD_TERM);
 		return map;
 	}
 
