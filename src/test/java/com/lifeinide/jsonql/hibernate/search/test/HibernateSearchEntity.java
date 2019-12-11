@@ -28,6 +28,9 @@ public class HibernateSearchEntity implements IJsonQLTestEntity<Long, HibernateS
 	protected String stringVal;
 
 	@Field(analyze = Analyze.NO, norms = Norms.NO)
+	protected boolean booleanVal;
+
+	@Field(analyze = Analyze.NO, norms = Norms.NO)
 	@FieldBridge(impl = RangeNumberBridge.class)
 	protected Long longVal;
 
@@ -80,6 +83,16 @@ public class HibernateSearchEntity implements IJsonQLTestEntity<Long, HibernateS
 	@Override
 	public void setStringVal(String stringVal) {
 		this.stringVal = stringVal;
+	}
+
+	@Override
+	public boolean isBooleanVal() {
+		return booleanVal;
+	}
+
+	@Override
+	public void setBooleanVal(boolean booleanVal) {
+		this.booleanVal = booleanVal;
 	}
 
 	@Override
