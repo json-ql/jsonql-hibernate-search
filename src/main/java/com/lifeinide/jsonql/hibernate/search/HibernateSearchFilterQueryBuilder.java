@@ -36,16 +36,27 @@ import java.util.function.Function;
  *
  * {@link HibernateSearchFilterQueryBuilder} can search entities of given type for a text contained in searchable fields with
  * additional filtering support by custom fields. By default we support following types of searchable fields in entities
- * (this behavior is configurable using one of constructors, though):
+ * (this behavior is configurable using one of constructors, though).
  *
- * <ol>
- *     <li>{@link HibernateSearch#FIELD_TEXT} containing all arbitrary texts, which should searchable, but previously be tokenized, analyzed, etc</li>
- *     <li>{@link HibernateSearch#FIELD_ID} string-like ids, which we don't want to analyze and tokenize, but made searchable as-is. For example
- *     	   invoice number "INV201012333" shouldn't be analyzer nor tokenized, but we want to be able to search such number as-is,
- *     	   possibly using wildcard search.</li>
- * </ol>
+ * <p>
+ * {@link HibernateSearch#FIELD_TEXT} which is appropriate to index <strong>case-insensitively all natural-language fields</strong> and
+ * should be analyzed with some analyzer. The indexed entity field has has usually the following definition:
+ * <pre>{@code
+ * @Field(name = HibernateSearch.FIELD_TEXT)
+ * @Analyzer(impl = ... , definition = ...)
+ * protected String myfield;
+ * }</pre>
+ * </p>
  *
- * Check the corresponsing constants description to see how to apply them on entity fields.
+ * <p>
+ * {@link HibernateSearch#FIELD_ID} which is appropriate to index <strong>case-insensitively all fields tokenized only with
+ * whitespaces</strong> and prevents from tokenizing using usual document number separators like slash or dash. This kind of field
+ * should be analyzed with no analyzer nor tokenizer. The indexed entity field has has usually the following definition:
+ * <pre>{@code
+ * @Field(name = HibernateSearch.FIELD_ID, analyze = Analyze.NO, norms = Norms.NO)
+ * protected String myfield;
+ * }</pre>
+ * </p>
  *
  * <h2>Filtering fields implementation</h2>
  *

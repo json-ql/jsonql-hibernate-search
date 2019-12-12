@@ -19,32 +19,7 @@ import static org.hibernate.search.util.StringHelper.*;
  */
 public class HibernateSearch {
 
-	/**
-	 * A common field for storing text content.
-	 * <p>
-	 * This kind of field is appropriate to index <strong>case-insensitively all natural-language fields</strong> and should be analyzed
-	 * with some analyzer. The indexed entity field has has usually the following definition:
-	 * <pre>{@code
-	 * @Field(name = HibernateSearch.FIELD_TEXT)
-	 * @Analyzer(impl = ... , definition = ...)
-	 * protected String myfield;
-	 * }</pre>
-	 * </p>
-	 **/
 	public static final String FIELD_TEXT = "text";
-
-	/**
-	 * A common field for storing text indentificator, like document numbers {@code FV/2016/12/223412}.
-	 * <p>
-	 * This kind of field is appropriate to index <strong>case-insensitively all fields tokenized only with whitespaces</strong> and
-	 * prevents from tokenizing using usual document number separators like slash or dash. This kind of field should be analyzed
-	 * with no analyzer nor tokenizer. The indexed entity field has has usually the following definition:
-	 * <pre>{@code
-	 * @Field(name = HibernateSearch.FIELD_ID, analyze = Analyze.NO, norms = Norms.NO)
-	 * protected String myfield;
-	 * }</pre>
-	 * </p>
-	 **/
 	public static final String FIELD_ID = "textid";
 
 	protected EntityManager entityManager;
