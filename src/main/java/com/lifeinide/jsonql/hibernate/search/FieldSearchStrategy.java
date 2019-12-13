@@ -1,8 +1,5 @@
 package com.lifeinide.jsonql.hibernate.search;
 
-import org.apache.lucene.search.Query;
-import org.hibernate.search.query.dsl.QueryBuilder;
-
 /**
  * Represents the way the field is searched with {@link HibernateSearchFilterQueryBuilder}.
  *
@@ -10,35 +7,16 @@ import org.hibernate.search.query.dsl.QueryBuilder;
  */
 public enum FieldSearchStrategy {
 
-	/** Does {@link org.apache.lucene.search.PhraseQuery} **/
-	PHRASE {
+	/**
+	 * Default field search strategy is just full text search for all words in the passed phrase and is appropriate to search in the
+	 * {@link HibernateSearch#FIELD_TEXT} field.
+	 */
+	DEFAULT,
 
-		@Override
-		public Query createQuery(QueryBuilder queryBuilder, String field, String query) {
-			return queryBuilder
-				.phrase()
-				.onField(field)
-				.sentence(query)
-				.createQuery();
-		}
-
-	},
-
-	/** Does {@link org.apache.lucene.search.TermQuery} with {@link org.hibernate.search.query.dsl.WildcardContext} **/
-	WILDCARD_TERM {
-
-		@Override
-		public Query createQuery(QueryBuilder queryBuilder, String field, String query) {
-			return queryBuilder
-				.keyword()
-				.wildcard()
-				.onField(field)
-				.matching(HibernateSearch.makeWild(query))
-				.createQuery();
-		}
-
-	};
-
-   public abstract Query createQuery(QueryBuilder queryBuilder, String field, String query);
+	/**
+	 * This search strategy uses full phrase match with wildcard as last character to find documents with keywords starting from search
+	 * string. This strategy is appropriate to lookup in this {@link HibernateSearch#FIELD_ID} field.
+	 */
+	WILDCARD_PHRASE;
 
 }

@@ -12,6 +12,7 @@ import com.lifeinide.jsonql.core.intr.QueryFilter;
 import com.lifeinide.jsonql.core.intr.Sortable;
 import com.lifeinide.jsonql.hibernate.search.bridge.BaseDomainFieldBridge;
 import com.lifeinide.jsonql.hibernate.search.bridge.BigDecimalRangeBridge;
+import org.apache.lucene.search.Query;
 import org.hibernate.search.exception.SearchException;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.query.dsl.BooleanJunction;
@@ -162,12 +163,11 @@ extends BaseFilterQueryBuilder<E, P, FullTextQuery, HibernateSearchQueryBuilderC
 
 		for (Map.Entry<String, FieldSearchStrategy> entry: fields.entrySet()) {
 			try {
-				fullTextQuery.should(entry.getValue().createQuery(queryBuilder, entry.getKey(), q));
+				fullTextQuery.should(createFieldQuery(entry.getValue(), entry.getKey(), q));
 				fieldFound = true;
 			} catch (Exception e) {
 				// silently, this means that some of our full text fields don't exists in the entity
 			}
-
 		}
 
 		if (!fieldFound)
@@ -421,10 +421,31 @@ extends BaseFilterQueryBuilder<E, P, FullTextQuery, HibernateSearchQueryBuilderC
 		return (P) execute(pageable, sortable, null, null);
 	}
 
+	protected Query createFieldQuery(FieldSearchStrategy strategy, String field, String query) {
+		switch (strategy) {
+			case DEFAULT:
+				return context.getQueryBuilder()
+					.phrase()
+					.onField(field)
+					.sentence(query)
+					.createQuery();
+			case WILDCARD_PHRASE:
+				return context.getQueryBuilder()
+					.keyword()
+					.wildcard()
+					.onField(field)
+					.matching(HibernateSearch.makeWild(query))
+					.createQuery();
+			default:
+				throw new IllegalStateException(String.format("Strategy: %s is not implemented", strategy));
+		}
+	}
+
+
 	public static Map<String, FieldSearchStrategy> defaultSearchFields() {
 		Map<String, FieldSearchStrategy> map = new LinkedHashMap<>();
-		map.put(HibernateSearch.FIELD_TEXT, FieldSearchStrategy.PHRASE);
-		map.put(HibernateSearch.FIELD_ID, FieldSearchStrategy.WILDCARD_TERM);
+		map.put(HibernateSearch.FIELD_TEXT, FieldSearchStrategy.DEFAULT);
+		map.put(HibernateSearch.FIELD_ID, FieldSearchStrategy.WILDCARD_PHRASE);
 		return map;
 	}
 
