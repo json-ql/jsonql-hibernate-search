@@ -21,7 +21,6 @@ The following example uses Hibernate working on H2 database, whereas the Lucene 
 ### 1. Add required dependencies
 
 ```groovy
-{
 dependencies {
     implementation group: 'com.lifeinide.jsonql', name: 'jsonql-hibernate-search', version: '1.0.1'
     implementation group: 'com.h2database', name: 'h2', version: '1.4.199'
@@ -50,7 +49,7 @@ public class User {
 }
 ```
 
-> Note, that Hibernate Search supports primitive fields like `boolean` out of the box. However, if you want to filter data with some custom things like related entities, you need to use custom `FieldBridge`. Please take a look at `BaseDomainFieldBridge` and `RangeNumberBridge` provided by this lib.
+> Note, that Hibernate Search supports primitive fields like `boolean` out of the box. However, if you want to filter data with some custom things like related entities, you need to use custom `FieldBridge`. Please take a look at `BaseDomainFieldBridge` and `BigDecimalRangeBridge` provided by this lib.
 
 ### 3. Create `META-INF/persistence.xml` mapping
 
