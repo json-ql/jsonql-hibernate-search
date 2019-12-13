@@ -28,6 +28,10 @@ public class HibernateSearch {
 		this.entityManager = entityManager;
 	}
 
+	public EntityManager entityManager() {
+		return entityManager;
+	}
+
 	public FullTextEntityManager fullTextEntityManager() {
 		return Search.getFullTextEntityManager(entityManager);
 	}
