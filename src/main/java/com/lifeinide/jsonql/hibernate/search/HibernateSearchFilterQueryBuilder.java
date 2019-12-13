@@ -1,15 +1,11 @@
 package com.lifeinide.jsonql.hibernate.search;
 
-import com.lifeinide.jsonql.core.BaseFilterQueryBuilder;
-import com.lifeinide.jsonql.core.dto.BasePageableRequest;
 import com.lifeinide.jsonql.core.dto.Page;
 import com.lifeinide.jsonql.core.enums.QueryCondition;
 import com.lifeinide.jsonql.core.enums.QueryConjunction;
 import com.lifeinide.jsonql.core.filters.*;
 import com.lifeinide.jsonql.core.intr.FilterQueryBuilder;
-import com.lifeinide.jsonql.core.intr.Pageable;
 import com.lifeinide.jsonql.core.intr.QueryFilter;
-import com.lifeinide.jsonql.core.intr.Sortable;
 import com.lifeinide.jsonql.hibernate.search.bridge.BaseDomainFieldBridge;
 import com.lifeinide.jsonql.hibernate.search.bridge.BigDecimalRangeBridge;
 import org.apache.lucene.search.Query;
@@ -27,8 +23,6 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Implementation of {@link FilterQueryBuilder} for Hibernate Search using local filesystem Lucene index.
@@ -131,7 +125,7 @@ import java.util.function.Function;
  * @author Lukasz Frankowski
  */
 public class HibernateSearchFilterQueryBuilder<E, P extends Page<E>>
-extends BaseFilterQueryBuilder<E, P, FullTextQuery, HibernateSearchQueryBuilderContext<E>, HibernateSearchFilterQueryBuilder<E, P>> {
+extends BaseHibernateSearchFilterQueryBuilder<E, P, HibernateSearchQueryBuilderContext<E>, HibernateSearchFilterQueryBuilder<E, P>> {
 
 	public static final Logger logger = LoggerFactory.getLogger(HibernateSearchFilterQueryBuilder.class);
 
@@ -154,8 +148,7 @@ extends BaseFilterQueryBuilder<E, P, FullTextQuery, HibernateSearchQueryBuilderC
 												Map<String, FieldSearchStrategy> fields) {
 		QueryBuilder queryBuilder = hibernateSearch.queryBuilder(entityClass);
 		BooleanJunction<?> booleanJunction = queryBuilder.bool();
-		this.context = new HibernateSearchQueryBuilderContext<>(q, entityClass, hibernateSearch, queryBuilder, booleanJunction,
-			hibernateSearch.fullTextEntityManager().getSearchFactory().getIndexedTypeDescriptor(entityClass));
+		this.context = new HibernateSearchQueryBuilderContext<>(q, entityClass, hibernateSearch, queryBuilder, booleanJunction);
 
 		BooleanJunction<?> fullTextQuery = queryBuilder.bool();
 
@@ -383,44 +376,6 @@ extends BaseFilterQueryBuilder<E, P, FullTextQuery, HibernateSearchQueryBuilderC
 		return context.getHibernateSearch().buildQuery(context.getBooleanJunction().createQuery(), context.getEntityClass());
 	}
 
-	@SuppressWarnings("unchecked")
-	protected <T> Page<T> execute(Pageable pageable, Sortable<?> sortable, Consumer<FullTextQuery> queryCustomizer,
-								  Function<List<?>, List<T>> resultsTransformer) {
-		if (pageable==null)
-			pageable = BasePageableRequest.ofUnpaged();
-		if (sortable==null)
-			sortable = BasePageableRequest.ofUnpaged();
-
-		FullTextQuery fullTextQuery = build();
-		if (queryCustomizer!=null)
-			queryCustomizer.accept(fullTextQuery);
-
-		if (logger.isTraceEnabled())
-			logger.trace("Executing lucene query: {}", fullTextQuery.toString());
-
-		long count = fullTextQuery.getResultSize();
-
-		if (pageable.isPaged()) {
-			fullTextQuery.setFirstResult(pageable.getOffset());
-			fullTextQuery.setMaxResults(pageable.getPageSize());
-		}
-
-		List<T> resultsList;
-		if (resultsTransformer!=null)
-			resultsList = resultsTransformer.apply(fullTextQuery.getResultList());
-		else
-			resultsList = (List<T>) fullTextQuery.getResultList();
-
-		return buildPageableResult(pageable.getPageSize(), pageable.getPage(), count, resultsList);
-
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public P list(Pageable pageable, Sortable<?> sortable) {
-		return (P) execute(pageable, sortable, null, null);
-	}
-
 	protected Query createFieldQuery(FieldSearchStrategy strategy, String field, String query) {
 		switch (strategy) {
 			case DEFAULT:
@@ -441,6 +396,10 @@ extends BaseFilterQueryBuilder<E, P, FullTextQuery, HibernateSearchQueryBuilderC
 		}
 	}
 
+	@Override
+	protected Logger logger() {
+		return logger;
+	}
 
 	public static Map<String, FieldSearchStrategy> defaultSearchFields() {
 		Map<String, FieldSearchStrategy> map = new LinkedHashMap<>();
