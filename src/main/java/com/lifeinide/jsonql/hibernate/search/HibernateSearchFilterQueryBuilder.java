@@ -5,14 +5,15 @@ import com.lifeinide.jsonql.core.enums.QueryCondition;
 import com.lifeinide.jsonql.core.enums.QueryConjunction;
 import com.lifeinide.jsonql.core.filters.*;
 import com.lifeinide.jsonql.core.intr.FilterQueryBuilder;
+import com.lifeinide.jsonql.core.intr.Pageable;
 import com.lifeinide.jsonql.core.intr.QueryFilter;
+import com.lifeinide.jsonql.core.intr.Sortable;
 import com.lifeinide.jsonql.hibernate.search.bridge.BaseDomainFieldBridge;
 import com.lifeinide.jsonql.hibernate.search.bridge.BigDecimalRangeBridge;
 import org.apache.lucene.search.Query;
 import org.hibernate.search.exception.SearchException;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.query.dsl.BooleanJunction;
-import org.hibernate.search.query.dsl.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,11 +170,9 @@ extends BaseHibernateSearchFilterQueryBuilder<E, P, HibernateSearchQueryBuilderC
 
 	protected HibernateSearchFilterQueryBuilder(HibernateSearch hibernateSearch, Class<E> entityClass, String q,
 												Map<String, FieldSearchStrategy> fields) {
-		QueryBuilder queryBuilder = hibernateSearch.queryBuilder(entityClass);
-		BooleanJunction<?> booleanJunction = queryBuilder.bool();
-		this.context = new HibernateSearchQueryBuilderContext<>(q, entityClass, hibernateSearch, queryBuilder, booleanJunction);
+		this.context = new HibernateSearchQueryBuilderContext<>(q, entityClass, hibernateSearch);
 
-		BooleanJunction<?> fullTextQuery = queryBuilder.bool();
+		BooleanJunction<?> fullTextQuery = context.getQueryBuilder().bool();
 
 		boolean fieldFound = false;
 
@@ -189,7 +188,7 @@ extends BaseHibernateSearchFilterQueryBuilder<E, P, HibernateSearchQueryBuilderC
 		if (!fieldFound)
 			throw new SearchException(String.format("No fulltext fields found for: %s", entityClass.getSimpleName()));
 
-		booleanJunction.must(fullTextQuery.createQuery());
+		context.getBooleanJunction().must(fullTextQuery.createQuery());
 
 //			try {
 //				for (FieldAnalyzer field: HibernateSearch.ALL_FIELDS) {
@@ -395,7 +394,7 @@ extends BaseHibernateSearchFilterQueryBuilder<E, P, HibernateSearchQueryBuilderC
 	}
 
 	@Override
-	public FullTextQuery build() {
+	public FullTextQuery build(Pageable pageable, Sortable<?> sortable) {
 		return context.getHibernateSearch().buildQuery(context.getBooleanJunction().createQuery(), context.getEntityClass());
 	}
 

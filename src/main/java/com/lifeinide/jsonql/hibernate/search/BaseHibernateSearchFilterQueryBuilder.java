@@ -30,7 +30,7 @@ public abstract class BaseHibernateSearchFilterQueryBuilder<
 		if (sortable==null)
 			sortable = BasePageableRequest.ofUnpaged();
 
-		FullTextQuery fullTextQuery = build();
+		FullTextQuery fullTextQuery = build(pageable, sortable);
 		if (queryCustomizer!=null)
 			queryCustomizer.accept(fullTextQuery);
 
