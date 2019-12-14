@@ -4,6 +4,9 @@ import com.lifeinide.jsonql.core.BaseQueryBuilderContext;
 import org.hibernate.search.metadata.IndexedTypeDescriptor;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * @author Lukasz Frankowski
  */
@@ -15,30 +18,31 @@ public abstract class BaseHibernateSearchQueryBuilderContext<E> extends BaseQuer
 	protected QueryBuilder queryBuilder;
 	protected IndexedTypeDescriptor indexedTypeDescriptor = null;
 
-	public BaseHibernateSearchQueryBuilderContext(String query, Class<E> entityClass, HibernateSearch hibernateSearch) {
+	public BaseHibernateSearchQueryBuilderContext(@Nullable String query, @Nonnull Class<E> entityClass,
+												  @Nonnull HibernateSearch hibernateSearch) {
 		this.query = query;
 		this.entityClass = entityClass;
 		this.hibernateSearch = hibernateSearch;
 		this.queryBuilder = hibernateSearch.queryBuilder(entityClass);
 	}
 
-	public String getQuery() {
+	@Nullable public String getQuery() {
 		return query;
 	}
 
-	public Class<E> getEntityClass() {
+	@Nonnull public Class<E> getEntityClass() {
 		return entityClass;
 	}
 
-	public HibernateSearch getHibernateSearch() {
+	@Nonnull public HibernateSearch getHibernateSearch() {
 		return hibernateSearch;
 	}
 
-	public QueryBuilder getQueryBuilder() {
+	@Nonnull public QueryBuilder getQueryBuilder() {
 		return queryBuilder;
 	}
 
-	public IndexedTypeDescriptor getIndexedTypeDescriptor() {
+	@Nonnull public IndexedTypeDescriptor getIndexedTypeDescriptor() {
 		if (indexedTypeDescriptor==null)
 			indexedTypeDescriptor = hibernateSearch.fullTextEntityManager().getSearchFactory().getIndexedTypeDescriptor(entityClass);
 

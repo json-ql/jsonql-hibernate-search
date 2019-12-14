@@ -17,6 +17,8 @@ import org.hibernate.search.query.dsl.BooleanJunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -141,15 +143,15 @@ extends BaseHibernateSearchFilterQueryBuilder<E, P, HibernateSearchQueryBuilderC
 	/**
 	 * Builds a query builder for concrete entity class with customizable search fields.
 	 */
-	public HibernateSearchFilterQueryBuilder(EntityManager entityManager, Class<E> entityClass, String q,
-											 Map<String, FieldSearchStrategy> fields) {
+	public HibernateSearchFilterQueryBuilder(@Nonnull EntityManager entityManager, @Nonnull Class<E> entityClass, @Nullable String q,
+											 @Nullable Map<String, FieldSearchStrategy> fields) {
 		this(new HibernateSearch(entityManager), entityClass, q, fields);
 	}
 
 	/**
 	 * Builds a query builder for concrete entity class with default search fields.
 	 */
-	public HibernateSearchFilterQueryBuilder(EntityManager entityManager, Class<E> entityClass, String q) {
+	public HibernateSearchFilterQueryBuilder(@Nonnull EntityManager entityManager, @Nonnull Class<E> entityClass, @Nullable String q) {
 		this(entityManager, entityClass, q, defaultSearchFields());
 	}
 
@@ -157,33 +159,35 @@ extends BaseHibernateSearchFilterQueryBuilder<E, P, HibernateSearchQueryBuilderC
 	 * Builds a global query builder with customizable search fields.
 	 */
 	@SuppressWarnings("unchecked")
-	public HibernateSearchFilterQueryBuilder(EntityManager entityManager, String q, Map<String, FieldSearchStrategy> fields) {
+	public HibernateSearchFilterQueryBuilder(@Nonnull EntityManager entityManager, @Nullable String q,
+											 @Nullable Map<String, FieldSearchStrategy> fields) {
 		this(entityManager, (Class) Object.class, q, fields);
 	}
 
 	/**
 	 * Builds a global query builder with default search fields.
 	 */
-	public HibernateSearchFilterQueryBuilder(EntityManager entityManager, String q) {
+	public HibernateSearchFilterQueryBuilder(@Nonnull EntityManager entityManager, @Nullable String q) {
 		this(entityManager, q, defaultSearchFields());
 	}
 
-	protected HibernateSearchFilterQueryBuilder(HibernateSearch hibernateSearch, Class<E> entityClass, String q,
-												Map<String, FieldSearchStrategy> fields) {
+	protected HibernateSearchFilterQueryBuilder(@Nonnull HibernateSearch hibernateSearch, @Nonnull Class<E> entityClass,
+												@Nullable String q, @Nullable Map<String, FieldSearchStrategy> fields) {
 		this.context = new HibernateSearchQueryBuilderContext<>(q, entityClass, hibernateSearch);
 
 		BooleanJunction<?> fullTextQuery = context.getQueryBuilder().bool();
 
 		boolean fieldFound = false;
 
-		for (Map.Entry<String, FieldSearchStrategy> entry: fields.entrySet()) {
-			try {
-				fullTextQuery.should(createFieldQuery(entry.getValue(), entry.getKey(), q));
-				fieldFound = true;
-			} catch (Exception e) {
-				// silently, this means that some of our full text fields don't exists in the entity
+		if (fields!=null && q!=null)
+			for (Map.Entry<String, FieldSearchStrategy> entry: fields.entrySet()) {
+				try {
+					fullTextQuery.should(createFieldQuery(entry.getValue(), entry.getKey(), q));
+					fieldFound = true;
+				} catch (Exception e) {
+					// silently, this means that some of our full text fields don't exists in the entity
+				}
 			}
-		}
 
 		if (!fieldFound)
 			throw new SearchException(String.format("No fulltext fields found for: %s", entityClass.getSimpleName()));
@@ -228,8 +232,9 @@ extends BaseHibernateSearchFilterQueryBuilder<E, P, HibernateSearchQueryBuilderC
 
 	}
 
+	@Nonnull
 	@Override
-	public HibernateSearchFilterQueryBuilder<E, P> add(String field, DateRangeQueryFilter filter) {
+	public HibernateSearchFilterQueryBuilder<E, P> add(@Nonnull String field, DateRangeQueryFilter filter) {
 		if (filter!=null) {
 			LocalDate from = filter.calculateFrom();
 			LocalDate to = filter.calculateTo();
@@ -251,13 +256,15 @@ extends BaseHibernateSearchFilterQueryBuilder<E, P, HibernateSearchQueryBuilderC
 		return this;
 	}
 
+	@Nonnull
 	@Override
-	public HibernateSearchFilterQueryBuilder<E, P> add(String field, EntityQueryFilter<?> filter) {
+	public HibernateSearchFilterQueryBuilder<E, P> add(@Nonnull String field, EntityQueryFilter<?> filter) {
 		return add(field, (SingleValueQueryFilter<?>) filter);
 	}
 
+	@Nonnull
 	@Override
-	public HibernateSearchFilterQueryBuilder<E, P> add(String field, ListQueryFilter<? extends QueryFilter> filter) {
+	public HibernateSearchFilterQueryBuilder<E, P> add(@Nonnull String field, ListQueryFilter<? extends QueryFilter> filter) {
 		if (filter!=null) {
 
 			List<? extends QueryFilter> filters = filter.getFilters();
@@ -302,8 +309,9 @@ extends BaseHibernateSearchFilterQueryBuilder<E, P, HibernateSearchQueryBuilderC
 
 	}
 
+	@Nonnull
 	@Override
-	public HibernateSearchFilterQueryBuilder<E, P> add(String field, SingleValueQueryFilter<?> filter) {
+	public HibernateSearchFilterQueryBuilder<E, P> add(@Nonnull String field, SingleValueQueryFilter<?> filter) {
 		if (filter!=null) {
 			if (QueryCondition.eq.equals(filter.getCondition()))
 				must(context.getBooleanJunction(), field, filter.getValue(), true);
@@ -321,8 +329,9 @@ extends BaseHibernateSearchFilterQueryBuilder<E, P, HibernateSearchQueryBuilderC
 		return this;
 	}
 
+	@Nonnull
 	@Override
-	public HibernateSearchFilterQueryBuilder<E, P> add(String field, ValueRangeQueryFilter<? extends Number> filter) {
+	public HibernateSearchFilterQueryBuilder<E, P> add(@Nonnull String field, ValueRangeQueryFilter<? extends Number> filter) {
 		if (filter!=null) {
 			if (filter.getFrom()!=null)
 				context.getBooleanJunction().must(context.getQueryBuilder().range().onField(field).above(filter.getFrom()).createQuery());
@@ -388,13 +397,15 @@ extends BaseHibernateSearchFilterQueryBuilder<E, P, HibernateSearchQueryBuilderC
 		return this;
 	}
 
+	@Nonnull
 	@Override
 	public HibernateSearchQueryBuilderContext<E> context() {
 		return context;
 	}
 
+	@Nonnull
 	@Override
-	public FullTextQuery build(Pageable pageable, Sortable<?> sortable) {
+	public FullTextQuery build(@Nonnull Pageable pageable, @Nonnull Sortable<?> sortable) {
 		return context.getHibernateSearch().buildQuery(context.getBooleanJunction().createQuery(), context.getEntityClass());
 	}
 

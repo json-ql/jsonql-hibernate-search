@@ -2,6 +2,8 @@ package com.lifeinide.jsonql.hibernate.search;
 
 import com.lifeinide.jsonql.core.dto.Page;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 import java.util.Map;
 
@@ -11,19 +13,22 @@ import java.util.Map;
 public class DefaultHibernateSearchFilterQueryBuilder<E>
 extends HibernateSearchFilterQueryBuilder<E, Page<E>> {
 
-	public DefaultHibernateSearchFilterQueryBuilder(EntityManager entityManager, Class<E> entityClass, String q, Map<String, FieldSearchStrategy> fields) {
+	public DefaultHibernateSearchFilterQueryBuilder(@Nonnull EntityManager entityManager, @Nonnull Class<E> entityClass,
+													@Nullable String q, @Nullable Map<String, FieldSearchStrategy> fields) {
 		super(entityManager, entityClass, q, fields);
 	}
 
-	public DefaultHibernateSearchFilterQueryBuilder(EntityManager entityManager, Class<E> entityClass, String q) {
+	public DefaultHibernateSearchFilterQueryBuilder(@Nonnull EntityManager entityManager, @Nonnull Class<E> entityClass,
+													@Nullable String q) {
 		super(entityManager, entityClass, q);
 	}
 
-	public DefaultHibernateSearchFilterQueryBuilder(EntityManager entityManager, String q, Map<String, FieldSearchStrategy> fields) {
+	public DefaultHibernateSearchFilterQueryBuilder(@Nonnull EntityManager entityManager, @Nullable String q,
+													@Nonnull Map<String, FieldSearchStrategy> fields) {
 		super(entityManager, q, fields);
 	}
 
-	public DefaultHibernateSearchFilterQueryBuilder(EntityManager entityManager, String q) {
+	public DefaultHibernateSearchFilterQueryBuilder(@Nonnull EntityManager entityManager, @Nullable String q) {
 		super(entityManager, q);
 	}
 
