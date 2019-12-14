@@ -18,9 +18,4 @@ public class DomainFieldBridge extends BaseDomainFieldBridge<IJsonQLBaseTestEnti
 		return entity instanceof IJsonQLBaseTestEntity;
 	}
 
-	@Override
-	protected boolean supportsNulls() {
-		return false;
-	}
-	
 }

@@ -37,7 +37,9 @@ public abstract class BaseDomainFieldBridge<E> implements FieldBridge, StringBri
 	 * In case of other storage usage supporting nulls (for example Hibernate Search with ElasticSearch backend) should be set to
 	 * {@code true}.
 	 */
-	protected abstract boolean supportsNulls();
+	protected boolean supportsNulls() {
+		return false;
+	}
 
 	protected String nullVal() {
 		return supportsNulls() ? null : NULL_ID;
