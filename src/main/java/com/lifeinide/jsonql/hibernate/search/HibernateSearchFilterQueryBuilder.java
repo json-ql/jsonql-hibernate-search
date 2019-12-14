@@ -109,6 +109,11 @@ import java.util.Map;
  * 		return entity instanceof IBaseEntity;
  *    }
  *
+ *    @Override
+ *    public boolean supportsNulls() {
+ * 		return false;
+ *    }
+ *
  * }
  * }</pre>
  *
