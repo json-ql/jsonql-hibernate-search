@@ -91,7 +91,7 @@ public class HibernateSearchQueryBuilderTest extends JsonQLBaseQueryBuilderTest<
 			Page<?> page = qb.list();
 			Assertions.assertEquals(100, page.getCount());
 
-			qb = new DefaultHibernateSearchFilterQueryBuilder<>(em, Object.class, SEARCHABLE_STRING_PART);
+			qb = new DefaultHibernateSearchFilterQueryBuilder<>(em, SEARCHABLE_STRING_PART);
 			page = qb.list();
 			Assertions.assertEquals(101, page.getCount());
 		});

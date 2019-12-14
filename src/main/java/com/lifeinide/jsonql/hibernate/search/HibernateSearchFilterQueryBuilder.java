@@ -138,15 +138,33 @@ extends BaseHibernateSearchFilterQueryBuilder<E, P, HibernateSearchQueryBuilderC
 	protected Map<String, FieldSearchStrategy> fields;
 
 	/**
-	 * @param entityClass Use concrete entity class to search for the specific entities, or {@code Object.class} to do a global search.
+	 * Builds a query builder for concrete entity class with customizable search fields.
 	 */
 	public HibernateSearchFilterQueryBuilder(EntityManager entityManager, Class<E> entityClass, String q,
 											 Map<String, FieldSearchStrategy> fields) {
 		this(new HibernateSearch(entityManager), entityClass, q, fields);
 	}
 
+	/**
+	 * Builds a query builder for concrete entity class with default search fields.
+	 */
 	public HibernateSearchFilterQueryBuilder(EntityManager entityManager, Class<E> entityClass, String q) {
 		this(entityManager, entityClass, q, defaultSearchFields());
+	}
+
+	/**
+	 * Builds a global query builder with customizable search fields.
+	 */
+	@SuppressWarnings("unchecked")
+	public HibernateSearchFilterQueryBuilder(EntityManager entityManager, String q, Map<String, FieldSearchStrategy> fields) {
+		this(entityManager, (Class) Object.class, q, fields);
+	}
+
+	/**
+	 * Builds a global query builder with default search fields.
+	 */
+	public HibernateSearchFilterQueryBuilder(EntityManager entityManager, String q) {
+		this(entityManager, q, defaultSearchFields());
 	}
 
 	protected HibernateSearchFilterQueryBuilder(HibernateSearch hibernateSearch, Class<E> entityClass, String q,
