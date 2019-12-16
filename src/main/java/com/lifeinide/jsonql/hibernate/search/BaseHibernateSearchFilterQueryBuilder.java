@@ -38,8 +38,6 @@ public abstract class BaseHibernateSearchFilterQueryBuilder<
 		if (logger().isTraceEnabled())
 			logger().trace("Executing full text query: {}", fullTextQuery.toString());
 
-		long count = fullTextQuery.getResultSize();
-
 		if (pageable.isPaged()) {
 			fullTextQuery.setFirstResult(pageable.getOffset());
 			fullTextQuery.setMaxResults(pageable.getPageSize());
@@ -51,7 +49,7 @@ public abstract class BaseHibernateSearchFilterQueryBuilder<
 		else
 			resultsList = (List<T>) fullTextQuery.getResultList();
 
-		return buildPageableResult(pageable.getPageSize(), pageable.getPage(), count, resultsList);
+		return buildPageableResult(pageable.getPageSize(), pageable.getPage(), fullTextQuery.getResultSize(), resultsList);
 
 	}
 
