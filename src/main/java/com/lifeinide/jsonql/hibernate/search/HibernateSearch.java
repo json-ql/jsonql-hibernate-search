@@ -19,7 +19,19 @@ import static org.hibernate.search.util.StringHelper.*;
  */
 public class HibernateSearch {
 
+	/**
+	 * A field to store searchable case-insensitive natural-language text.
+	 *
+	 * @see HibernateSearchFilterQueryBuilder
+	 */
 	public static final String FIELD_TEXT = "text";
+
+	/**
+	 * A field to store searchable case-insensitive all fields tokenized only with whitespaces (text identifiers, like invoice number,
+	 * emails, etc.).
+	 *
+	 * @see HibernateSearchFilterQueryBuilder
+	 */
 	public static final String FIELD_ID = "textid";
 
 	protected EntityManager entityManager;
