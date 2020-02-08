@@ -1,6 +1,7 @@
 package com.lifeinide.jsonql.hibernate.search.test;
 
 import com.lifeinide.jsonql.core.test.IJsonQLTestEntity;
+import com.lifeinide.jsonql.core.test.IJsonQLTestParentEntity;
 import com.lifeinide.jsonql.core.test.JsonQLTestEntityEnum;
 import com.lifeinide.jsonql.hibernate.search.HibernateSearch;
 import com.lifeinide.jsonql.hibernate.search.bridge.BigDecimalRangeBridge;
@@ -16,7 +17,7 @@ import java.time.LocalDate;
  */
 @Entity
 @Indexed
-public class HibernateSearchEntity implements IJsonQLTestEntity<Long, HibernateSearchAssociatedEntity> {
+public class HibernateSearchEntity implements IJsonQLTestEntity<Long>, IJsonQLTestParentEntity<Long, HibernateSearchAssociatedEntity> {
 
 	@Id private Long id;
 

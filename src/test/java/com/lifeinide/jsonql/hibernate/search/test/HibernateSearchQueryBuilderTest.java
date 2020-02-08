@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import javax.annotation.Nonnull;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -25,7 +26,6 @@ import java.util.function.Consumer;
 public class HibernateSearchQueryBuilderTest extends JsonQLBaseQueryBuilderTest<
 	EntityManager,
 	Long,
-	HibernateSearchAssociatedEntity,
 	HibernateSearchEntity,
 	HibernateSearchFilterQueryBuilder<HibernateSearchEntity, Page<HibernateSearchEntity>>
 > {
@@ -67,6 +67,7 @@ public class HibernateSearchQueryBuilderTest extends JsonQLBaseQueryBuilderTest<
 		return super.supports(feature);
 	}
 
+	@Nonnull
 	@Override
 	protected HibernateSearchEntity buildEntity(Long previousId) {
 		return new HibernateSearchEntity(previousId==null ? 1L : previousId+1);
