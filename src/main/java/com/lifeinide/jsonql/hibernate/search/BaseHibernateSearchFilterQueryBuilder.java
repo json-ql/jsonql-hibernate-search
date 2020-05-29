@@ -23,7 +23,7 @@ public abstract class BaseHibernateSearchFilterQueryBuilder<
 	SELF extends BaseHibernateSearchFilterQueryBuilder<E, P, C, SELF>
 > extends BaseFilterQueryBuilder<E, P, FullTextQuery, C, SELF> {
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "ConstantConditions"})
 	protected <T> Page<T> execute(Pageable pageable, Sortable<?> sortable, Consumer<FullTextQuery> queryCustomizer,
 								  Function<List<?>, List<T>> resultsTransformer) {
 		if (pageable==null)
@@ -40,7 +40,7 @@ public abstract class BaseHibernateSearchFilterQueryBuilder<
 
 		if (pageable.isPaged()) {
 			fullTextQuery.setFirstResult(pageable.getOffset());
-			fullTextQuery.setMaxResults(Integer.min(pageable.getPageSize(), maxResults!=null ? maxResults : Integer.MAX_VALUE));
+			fullTextQuery.setMaxResults(getPageSize(pageable));
 		} else if (maxResults!=null)
 			fullTextQuery.setMaxResults(maxResults);
 
@@ -50,7 +50,7 @@ public abstract class BaseHibernateSearchFilterQueryBuilder<
 		else
 			resultsList = (List<T>) fullTextQuery.getResultList();
 
-		return buildPageableResult(pageable.getPageSize(), pageable.getPage(), fullTextQuery.getResultSize(), resultsList);
+		return buildPageableResult(getPageSize(pageable), pageable.getPage(), fullTextQuery.getResultSize(), resultsList);
 
 	}
 
