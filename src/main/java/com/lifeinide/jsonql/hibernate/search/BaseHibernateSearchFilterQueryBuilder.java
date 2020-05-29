@@ -40,8 +40,9 @@ public abstract class BaseHibernateSearchFilterQueryBuilder<
 
 		if (pageable.isPaged()) {
 			fullTextQuery.setFirstResult(pageable.getOffset());
-			fullTextQuery.setMaxResults(pageable.getPageSize());
-		}
+			fullTextQuery.setMaxResults(Integer.min(pageable.getPageSize(), maxResults!=null ? maxResults : Integer.MAX_VALUE));
+		} else if (maxResults!=null)
+			fullTextQuery.setMaxResults(maxResults);
 
 		List<T> resultsList;
 		if (resultsTransformer!=null)
